@@ -1,7 +1,22 @@
 import { User } from "../models/user.model"
 
+const generateAccessAndRefreshToken = async(userId) => {
+    try {
+        const user = await User.findById(userId)
 
-const register = async(req, res, next) => {
+        const accessToken = user.generateAccessToken()
+        const refreshToken = user.generateRefreshToken()
+
+        user.refreshToken = refreshToken
+        await user.save({ validateBeforeSave: false })
+
+        return { accessToken, refreshToken }
+    } catch (error) {
+        console.log("Something went wrong while generating tokens: ", error)
+    }
+}
+
+const register = async(req, res) => {
     try {
         const { name, email, password, role } = req.body
 
@@ -35,6 +50,50 @@ const register = async(req, res, next) => {
         return res.status(200).json({message: "User registration successfull"})
     } catch (error) {
         console.log("User registration failed:", error)
+        return res.status(400).json({error: error})
+    }
+}
+
+const login = async(req, res) => {
+    try {
+        const { name, email, password } = req.body
+        
+        if (!(name || email)) {
+            return res.status(400).json({message: "username or email is required"})
+        }
+
+        const user = await User.findOne({
+            $or: [{ name }, { email }]
+        })
+
+        if(!user) {
+            return res.status(400).json({message: "User not found"})
+        }
+
+        const isPasswordCorrect = user.isPasswordCorrect(password)
+
+        if(!isPasswordCorrect) {
+            return res.status(400).json({message: "Invalid credentials"})
+        }
+
+        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
+
+        const loggedInUser = await User.findById(user._id).select(
+            "-password -refreshToken"
+        )
+
+        const options = {
+            httpOnly: true,
+            secure: true,
+        }
+
+        return res
+        .status(200)
+        .json({message: "User login successful", loggedInUser, accessToken, refreshToken})
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+    } catch (error) {
+        console.log("User login failed:", error)
         return res.status(400).json({error: error})
     }
 }
