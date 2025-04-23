@@ -12,4 +12,8 @@ app.get("/", (req, res) => {
     res.send("Auth server is running")
 })
 
+import authRouter from "./src/routes/user.route.js"
+
+app.use("/api/user", authRouter)
+
 export default app

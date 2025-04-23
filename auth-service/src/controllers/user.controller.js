@@ -99,5 +99,6 @@ const login = async(req, res) => {
 }
 
 export {
-    register
+    register,
+    login
 }
