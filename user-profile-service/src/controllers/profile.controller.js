@@ -46,13 +46,35 @@ const createProfile = async(req, res) => {
             resumeUrl
         })
 
-        return res.status(400).json({message: "User profile is created", profile})
+        return res.status(200).json({message: "User profile is created", profile})
     } catch (error) {
-        console.log("User Profile creation failed:", error)
+        console.log("User profile creation failed:", error)
+        return res.status(400).json({error: error})
+    }
+}
+
+const getUserProfile = async(req, res) => {
+    try {
+        const userId = req.params
+
+        if(!userId){
+            return res.status(400).json({message: "User Id is required"})
+        }
+
+        const profile = await Profile.findOne({ userId })
+
+        if(!profile) {
+            return res.status(400).json({message: "Profile is missing"})
+        }
+
+        return res.status(200).json({message: "Fetched user profile", profile})
+    } catch (error) {
+        console.log("Fetch user profile failed:", error)
         return res.status(400).json({error: error})
     }
 }
 
 export {
-    createProfile
+    createProfile,
+    getUserProfile
 }
