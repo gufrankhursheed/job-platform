@@ -105,8 +105,46 @@ const updateProfile = async (req, res) => {
     }
 }
 
+const updateResume = async(req, res) => {
+    try {
+        const userId = req.user?._id
+
+        if (!userId) {
+            return res.status(400).json({ message: "User Id is required" })
+        }
+
+        const profile = await Profile.findOne({ userId })
+
+        if (!profile) {
+            return res.status(404).json({ message: "Profile not found" })
+        }
+
+        const resumeLocalPath = req.file?.path
+
+        if(!resumeLocalPath) {
+            return res.status(400).json({message: "Resume file is missing"})
+        }
+
+        const resumeUrl = await uploadCloudinary(resumeLocalPath)
+
+        if(!resumeUrl) {
+            return res.status(400).json({messsage: "Failed to upload file"})
+        }
+
+        profile.resumeUrl = resumeUrl
+
+        await profile.save()
+
+        return res.status(200).json({ message: "Resume updated successfully", profile })
+    } catch (error) {
+        console.log("Resume update failed:", error)
+        return res.status(400).json({ error: error.message })
+    }
+}
+
 export {
     createProfile,
     getUserProfile,
-    updateProfile
+    updateProfile,
+    updateResume
 }
