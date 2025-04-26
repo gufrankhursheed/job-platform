@@ -142,9 +142,31 @@ const updateResume = async(req, res) => {
     }
 }
 
+const deleteProfile = async(req, res) => {
+    try {
+        const userId = req.user?._id
+
+        if (!userId) {
+            return res.status(400).json({ message: "User Id is required" })
+        }
+        
+        const profile = await Profile.deleteOne({ userId })
+
+        if(!profile) {
+            return res.status(400).json({message: "Profile is missing"})
+        }
+
+        return res.status(200).json({message: "Deleted user profile", profile})
+    } catch (error) {
+        console.log("Delete user profile failed:", error)
+        return res.status(400).json({error: error.message})
+    }
+}
+
 export {
     createProfile,
     getUserProfile,
     updateProfile,
-    updateResume
+    updateResume,
+    deleteProfile
 }
