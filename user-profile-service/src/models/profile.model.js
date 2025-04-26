@@ -16,16 +16,20 @@ const profileSchema = new Schema({
         required: true
     },
     bio: {
-        type: String
+        type: String,
+        required: true
     },
     skills: {
-        type: [String]
+        type: [String],
+        required: true
     },
     location: {
-        type: String
+        type: String,
+        required: true
     },
     resumeUrl: {
-        type: String
+        type: String,
+        required: true
     }
 }, {
     timestamps: true
