@@ -41,6 +41,40 @@ const createJob = async(req, res) => {
     }
 }
 
+const getAllJobs = async(req, res) => {
+    try {
+        const jobs = await Job.findAll()
+
+        return res.status(400).json({message: "All jobs retrieved successfully", jobs})
+    } catch (error) {
+        console.log("Jobs fetch failed:", error)
+        return res.status(400).json({error: error})
+    }
+}
+
+const getJobById = async(req, res) => {
+    try {
+        const { id } = req.params
+
+        if(!id) {
+            return res.status(400).json({message: "Job ID is required"})
+        }
+
+        const job = await Job.findByPk(id)
+
+        if(!job) {
+            return res.status(400).json({message: "Job not found"})
+        }
+
+        return res.status(200).json({message: "Job found successfully"})
+    } catch (error) {
+        console.log("Job fetch failed:", error)
+        return res.status(400).json({error: error})
+    }
+}
+
 export {
-    createJob
+    createJob,
+    getAllJobs,
+    getJobById
 }
