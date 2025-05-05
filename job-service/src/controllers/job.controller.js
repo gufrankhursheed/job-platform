@@ -83,7 +83,7 @@ const getJobById = async (req, res) => {
       return res.status(400).json({ message: "Job not found" });
     }
 
-    return res.status(200).json({ message: "Job found successfully" });
+    return res.status(200).json({ message: "Job found successfully", job});
   } catch (error) {
     console.log("Job fetch failed:", error);
     return res.status(400).json({ error: error });
@@ -117,4 +117,27 @@ const updateJob = async (req, res) => {
   }
 };
 
-export { createJob, getAllJobs, getJobById, updateJob };
+const deleteJob = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      if (!id) {
+        return res.status(400).json({ message: "Job ID is required" });
+      }
+  
+      const job = await Job.findByPk(id);
+  
+      if (!job) {
+        return res.status(400).json({ message: "Job not found" });
+      }
+
+      await job.destroy()
+  
+      return res.status(200).json({ message: "Job deleted successfully", job});
+    } catch (error) {
+      console.log("Job delete failed:", error);
+      return res.status(400).json({ error: error });
+    }
+};
+
+export { createJob, getAllJobs, getJobById, updateJob, deleteJob };
