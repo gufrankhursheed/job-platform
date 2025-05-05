@@ -84,17 +84,17 @@ const updateProfile = async (req, res) => {
 
         const { firstName, lastName, bio, skills, location } = req.body
 
-        if (firstName !== undefined) profile.firstName = firstName.trim()
-        if (lastName !== undefined) profile.lastName = lastName.trim()
-        if (bio !== undefined) profile.bio = bio.trim()
-        if (skills !== undefined) profile.skills = skills.split(",").map(skill => skill.trim())
-        if (location !== undefined) profile.location = location.trim()
-
         const profile = await Profile.findOne({ userId })
 
         if (!profile) {
             return res.status(404).json({ message: "Profile not found" })
         }
+
+        if (firstName !== undefined) profile.firstName = firstName.trim()
+        if (lastName !== undefined) profile.lastName = lastName.trim()
+        if (bio !== undefined) profile.bio = bio.trim()
+        if (skills !== undefined) profile.skills = skills.split(",").map(skill => skill.trim())
+        if (location !== undefined) profile.location = location.trim()
 
         await profile.save()
 
