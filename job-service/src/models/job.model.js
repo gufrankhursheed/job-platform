@@ -19,10 +19,18 @@ const Job = sequelize.define('Job', {
     },
     location: {
         type: DataTypes.STRING,
-        allowNull: false,
     },
     remote: {
         type: DataTypes.BOOLEAN,
+    },
+    category: {
+        type: DataTypes.STRING, 
+        allowNull: true,
+    },
+    status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'open',
     },
     datePosted: {
         type: DataTypes.DATE,
