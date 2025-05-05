@@ -15,3 +15,7 @@ connectDb()
 .catch((error) => {
     console.log("Error: ", error)
 })
+
+sequelize.sync().then(() => {
+    console.log('Sequelize models synchronized with database');
+});
