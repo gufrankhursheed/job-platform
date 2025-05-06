@@ -19,7 +19,7 @@ const Application = sequelize.define('Application', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-      jobId: {
+    jobId: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
