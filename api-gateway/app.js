@@ -13,7 +13,9 @@ app.get("/", (req, res) => {
 })
 
 import authRouter from "./src/routes/user.route.js"
+import googleRouter from "./src/routes/google.route.js"
 
 app.use("/api/user", authRouter)
+app.use("/api/auth", googleRouter)
 
 export default app

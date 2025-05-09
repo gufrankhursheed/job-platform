@@ -20,7 +20,7 @@ const userSchema = new Schema(
     role: {
       type: String,
       enum: ["candidate", "recruiter", "admin"],
-      default: "candidate",
+      default: null,
     },
     refreshToken: {
       type: String,
