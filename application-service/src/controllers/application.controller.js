@@ -114,9 +114,33 @@ const updateApplicatoin = async(req, res) => {
     }
 }
 
+const deleteApplicatoin = async(req, res) => {
+    try {
+        const { id } = req.params
+
+        if(!id) {
+            return res.status(400).json({message: "Application id is required"})
+        }
+
+        const application = await Application.findByPk(id)
+
+        if(!application) {
+            return res.status(400).json({message: "Application does not exists"})
+        }
+
+        await application.destroy()
+
+        return res.status(200).json({ message: "Application deleted successfully", application});
+    } catch (error) {
+        console.log("Application delete failed:", error);
+        return res.status(400).json({ error: error });
+    }
+}
+
 export {
     applyJob,
     getCandidateApplication,
     getJobApplication,
-    updateApplicatoin
+    updateApplicatoin,
+    deleteApplicatoin
 }
