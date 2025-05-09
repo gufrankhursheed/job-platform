@@ -82,8 +82,41 @@ const getJobApplication = async(req, res) => {
     }
 }
 
+const updateApplicatoin = async(req, res) => {
+    try {
+        const { id } = req.params
+
+        if(!id) {
+            return res.status(400).json({message: "Application id is required"})
+        }
+
+        const { status, resumeScore } = req.body
+
+        if(!status || !resumeScore) {
+            return res.status(400).json({message: "All fields required"})
+        }
+
+        const application = await Application.findByPk(id)
+
+        if(!application) {
+            return res.status(400).json({message: "Application does not exists"})
+        }
+
+        if(status !== undefined) application.status = status.trim()
+        if(resumeScore !== undefined) application.resumeScore = resumeScore.trim()
+            
+        await application.save()
+
+        return res.status(200).json({ message: "Application updated successfully", application })
+    } catch (error) {
+        console.log("Application update failed:", error);
+        return res.status(400).json({ error: error });
+    }
+}
+
 export {
     applyJob,
     getCandidateApplication,
-    getJobApplication
+    getJobApplication,
+    updateApplicatoin
 }
