@@ -98,7 +98,36 @@ const login = async(req, res) => {
     }
 }
 
+const logout = async(req, res) => {
+    try {
+        await User.findByIdAndUpdate(
+            req.user._id,
+            {
+                $unset: {
+                    refreshToken: 1
+                }
+            },
+            { new: true }
+        )
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+
+        return res
+        .status(200)
+        .json({message: "User logout successful"})
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+    } catch (error) {
+        console.log("User logout failed:", error)
+        return res.status(400).json({error: error})
+    }
+}
+
 export {
     register,
-    login
+    login,
+    logout
 }
