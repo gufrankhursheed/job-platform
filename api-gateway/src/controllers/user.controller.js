@@ -191,11 +191,38 @@ const getCurrentUser = async(req, res) => {
         .json({message: "current user fetched successfully", user: req.user})
 }
 
+const updateUser = async(req, res) => {
+    try {
+        const { status } = req.body
+
+        if(!status) {
+            return res.status(400).json({message: "Status is required"})
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            {
+                $set: {
+                    status
+                }
+            },
+            { new: true }
+        ).select("-password -refreshToken")
+
+        return res.status(200).json({message: "Updated User", user})
+
+    } catch (error) {
+        console.log("User update failed:", error)
+        return res.status(400).json({error: error})
+    }
+}
+
 export {
     register,
     login,
     logout,
     changeCurrentPassword,
     refreshAccessToken,
-    getCurrentUser
+    getCurrentUser,
+    updateUser
 }
