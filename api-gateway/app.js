@@ -9,7 +9,7 @@ app.use(cors())
 app.use(cookieParser())
 
 app.get("/", (req, res) => {
-    res.send("Auth server is running")
+    res.send("Api-gateway is running")
 })
 
 import authRouter from "./src/routes/user.route.js"
