@@ -82,6 +82,12 @@ const updateProfile = async (req, res) => {
             return res.status(400).json({ message: "User Id is required" })
         }
 
+        const { id } = req.params
+
+        if(id !== userId) {
+            return res.status(400).json({ message: "Not authorized to perform this action" })
+        }
+
         const { firstName, lastName, bio, skills, location } = req.body
 
         const profile = await Profile.findOne({ userId })
@@ -111,6 +117,12 @@ const updateResume = async(req, res) => {
 
         if (!userId) {
             return res.status(400).json({ message: "User Id is required" })
+        }
+
+        const { id } = req.params
+
+        if(id !== userId) {
+            return res.status(400).json({ message: "Not authorized to perform this action" })
         }
 
         const profile = await Profile.findOne({ userId })
@@ -148,6 +160,12 @@ const deleteProfile = async(req, res) => {
 
         if (!userId) {
             return res.status(400).json({ message: "User Id is required" })
+        }
+
+        const { id } = req.params
+
+        if(id !== userId) {
+            return res.status(400).json({ message: "Not authorized to perform this action" })
         }
         
         const profile = await Profile.deleteOne({ userId })
