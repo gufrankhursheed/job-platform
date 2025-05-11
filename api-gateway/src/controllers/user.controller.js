@@ -185,10 +185,17 @@ const refreshAccessToken = async(req, res) => {
     }
 }
 
+const getCurrentUser = async(req, res) => {
+    return res
+        .status(200)
+        .json({message: "current user fetched successfully", user: req.user})
+}
+
 export {
     register,
     login,
     logout,
     changeCurrentPassword,
-    refreshAccessToken
+    refreshAccessToken,
+    getCurrentUser
 }
