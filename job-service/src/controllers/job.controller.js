@@ -61,7 +61,7 @@ const getAllJobs = async (req, res) => {
     const jobs = await Job.findAll();
 
     return res
-      .status(400)
+      .status(200)
       .json({ message: "All jobs retrieved successfully", jobs });
   } catch (error) {
     console.log("Jobs fetch failed:", error);
