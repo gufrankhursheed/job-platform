@@ -28,8 +28,8 @@ const createJob = async (req, res) => {
 
     const employerId = req.user?._id
 
-    if(!employerId) {
-      return res.status(400).json({ message: "Unauthorized: Employer not found" });
+    if(req.user?.role !== "recruiter") {
+      return res.status(400).json({ message: "Unauthorized: Only recruiter can post a job" });
     }
 
     const existingJob = await Job.findOne({
@@ -102,6 +102,10 @@ const updateJob = async (req, res) => {
     const { id } = req.params
     const { title, description, location, salaryRange, company, status } = req.body
 
+    if(req.user?.role !== "recruiter") {
+      return res.status(400).json({ message: "Unauthorized: Only recruiter can update a job" });
+    }
+
     const job = await Job.findByPk(id)
 
     if (!job) {
@@ -131,6 +135,10 @@ const deleteJob = async (req, res) => {
       if (!id) {
         return res.status(400).json({ message: "Job ID is required" });
       }
+
+      if(req.user?.role !== "recruiter") {
+        return res.status(400).json({ message: "Unauthorized: Only recruiter can delete a job" });
+      }  
   
       const job = await Job.findByPk(id);
   

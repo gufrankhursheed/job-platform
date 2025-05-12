@@ -193,17 +193,17 @@ const getCurrentUser = async(req, res) => {
 
 const updateUser = async(req, res) => {
     try {
-        const { status } = req.body
+        const { role } = req.body
 
-        if(!status) {
-            return res.status(400).json({message: "Status is required"})
+        if(!role) {
+            return res.status(400).json({message: "Role is required"})
         }
 
         const user = await User.findByIdAndUpdate(
             req.user._id,
             {
                 $set: {
-                    status
+                    role
                 }
             },
             { new: true }

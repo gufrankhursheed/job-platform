@@ -1,8 +1,13 @@
 import Application from "../models/application.model"
 
-
 const applyJob = async(req, res) => {
     try {
+        const role = req.user?.role
+
+        if (role !== "candidate") {
+            return res.status(403).json({ message: "Only candidates can apply to jobs" })
+        }
+
         const { candidateId, jobId } = req.body
 
         if(!candidateId || !jobId) {
@@ -82,7 +87,7 @@ const getJobApplication = async(req, res) => {
     }
 }
 
-const updateApplicatoin = async(req, res) => {
+const updateApplication = async(req, res) => {
     try {
         const { id } = req.params
 
@@ -90,10 +95,10 @@ const updateApplicatoin = async(req, res) => {
             return res.status(400).json({message: "Application id is required"})
         }
 
-        const { status, resumeScore } = req.body
+        const { status } = req.body
 
-        if(!status || !resumeScore) {
-            return res.status(400).json({message: "All fields required"})
+        if(!status) {
+            return res.status(400).json({message: "Status is required"})
         }
 
         const application = await Application.findByPk(id)
@@ -103,7 +108,6 @@ const updateApplicatoin = async(req, res) => {
         }
 
         if(status !== undefined) application.status = status.trim()
-        if(resumeScore !== undefined) application.resumeScore = resumeScore.trim()
             
         await application.save()
 
@@ -114,7 +118,7 @@ const updateApplicatoin = async(req, res) => {
     }
 }
 
-const deleteApplicatoin = async(req, res) => {
+const deleteApplication = async(req, res) => {
     try {
         const { id } = req.params
 
@@ -141,6 +145,6 @@ export {
     applyJob,
     getCandidateApplication,
     getJobApplication,
-    updateApplicatoin,
-    deleteApplicatoin
+    updateApplication,
+    deleteApplication
 }

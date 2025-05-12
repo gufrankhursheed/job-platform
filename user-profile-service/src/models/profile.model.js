@@ -30,7 +30,11 @@ const profileSchema = new Schema({
     resumeUrl: {
         type: String,
         required: true
-    }
+    },
+    resumeScore: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
 }, {
     timestamps: true
 })

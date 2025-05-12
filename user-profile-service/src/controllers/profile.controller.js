@@ -142,6 +142,11 @@ const updateResume = async(req, res) => {
         if(!resumeUrl) {
             return res.status(400).json({messsage: "Failed to upload file"})
         }
+        
+        // After integrating AI
+        //const { resumeScore } = req.body
+
+        //if(resumeScore !== undefined) profile.resumeScore = Number(resumeScore)
 
         profile.resumeUrl = resumeUrl
 

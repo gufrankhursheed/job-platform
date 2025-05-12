@@ -7,10 +7,6 @@ const Application = sequelize.define('Application', {
         allowNull: false,
         defaultValue: 'applied'
     },
-    resumeScore: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0
-    },
     appliedDate: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
