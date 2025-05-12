@@ -8,7 +8,9 @@ const applyJob = async(req, res) => {
             return res.status(403).json({ message: "Only candidates can apply to jobs" })
         }
 
-        const { candidateId, jobId } = req.body
+        const candidateId = req.user?._id
+
+        const { jobId } = req.body
 
         if(!candidateId || !jobId) {
             return res.status(400).json({message: "Information missing"})
