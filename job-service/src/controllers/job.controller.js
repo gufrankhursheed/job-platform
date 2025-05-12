@@ -53,6 +53,7 @@ const createJob = async (req, res) => {
       remote,
       category,
       status: "open",
+      employerId
     });
 
     return res.status(200).json({ message: "Job created successfully", job });
