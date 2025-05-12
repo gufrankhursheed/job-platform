@@ -36,6 +36,10 @@ const Job = sequelize.define('Job', {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
     },
+    employerId: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
 })
 
 export default Job

@@ -26,6 +26,12 @@ const createJob = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    const employerId = req.user?._id
+
+    if(!employerId) {
+      return res.status(400).json({ message: "Unauthorized: Employer not found" });
+    }
+
     const existingJob = await Job.findOne({
       where: {
         title: title,
@@ -49,7 +55,7 @@ const createJob = async (req, res) => {
       status: "open",
     });
 
-    return res.status(200).json({ message: "Job created successfully" });
+    return res.status(200).json({ message: "Job created successfully", job });
   } catch (error) {
     console.log("Job creation failed:", error);
     return res.status(400).json({ error: error });
