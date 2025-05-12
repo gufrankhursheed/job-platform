@@ -8,7 +8,7 @@ dotenv.config({
 
 connectDb()
 .then(() => {
-  app.listen(process.env.PORT || 5001, () => {
+  app.listen(process.env.PORT || 5000, () => {
     console.log(`Auth-server is running on port ${process.env.PORT}`);
   });
 })
