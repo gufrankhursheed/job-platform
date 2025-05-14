@@ -1,6 +1,5 @@
 import Interview from "../models/interview.model"
 
-
 const scheduleInterview = async(req, res) => {
     try {
         const { candidateId, recruiterId, jobId, applicationId, scheduledAt, durationMinutes, status, notes } = req.body
@@ -35,6 +34,59 @@ const scheduleInterview = async(req, res) => {
     }
 }
 
+const getInterviewsByRecruiter = async(req, res) => {
+    try {
+        const { id } = req.params
+
+        if(!id) {
+            return res.status(400).json({message: "Recruiter Id is required"})
+        }
+
+        const interviews = await Interview.findOne({
+            where: {
+                recruiterId: id
+            }
+        })
+
+        if(!interviews) {
+            return res.status(400).json({message: "No interviews found"})
+        }
+
+        return res.status(200).json({message: "Interview fetched successfully", interviews})
+    } catch (error) {
+        console.log("Interview fetch failed:", error)
+        return res.status(400).json({error: error})
+    }
+}
+
+const getInterviewsByCandidate = async(req, res) => {
+    try {
+        const { id } = req.params
+
+        if(!id) {
+            return res.status(400).json({message: "Candidate Id is required"})
+        }
+
+        const interviews = await Interview.findOne({
+            where: {
+                candidateId: id
+            }
+        })
+
+        if(!interviews) {
+            return res.status(400).json({message: "No interviews found"})
+        }
+
+        return res.status(200).json({message: "Interview fetched successfully", interviews})
+    } catch (error) {
+        console.log("Interview fetch failed:", error)
+        return res.status(400).json({error: error})
+    }
+}
+
+
 export {
-    scheduleInterview
+    scheduleInterview,
+    getInterviewsByRecruiter,
+    getInterviewsByCandidate
 }
