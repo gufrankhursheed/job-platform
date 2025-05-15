@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { oAuth2Client } from "../utils/googleAuth";
+import { oAuth2Client } from "../utils/googleAuth.js";
 import { google } from "googleapis";
-import { User } from "../models/user.model";
+import { User } from "../models/user.model.js";
 
 const router = Router()
 
