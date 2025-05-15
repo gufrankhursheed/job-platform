@@ -60,10 +60,18 @@ router.get("/google/callback", async(req, res) => {
         });
     }
 
+    user.google = {
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        tokenExpiryDate: new Date(tokens.expiry_date),
+    }
+
+    await user.save({ validateBeforeSave: false })
+
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
     
     const loggedInUser = await User.findById(user._id).select(
-        "-password -refreshToken"
+        "-password -refreshToken -google"
     )
 
     const options = {

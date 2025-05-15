@@ -28,6 +28,17 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
     },
+    google: {
+      accessToken: {
+        type: String,
+      },
+      refreshToken: {
+        type: String
+      },
+      tokenExpiryDate: {
+        type: Date
+      },
+    }
   },
   {
     timestamps: true,
