@@ -19,9 +19,9 @@ const generateAccessAndRefreshToken = async(userId) => {
 
 const register = async(req, res) => {
     try {
-        const { name, email, password, role } = req.body
+        const { name, email, password } = req.body
 
-        if ([name, email, password, role].some(
+        if ([name, email, password].some(
             (field) => (field?.trim() === "")
         )) {
             return res.status(400).json({message: "All fields are required"})
@@ -29,15 +29,14 @@ const register = async(req, res) => {
 
         const userExists = await User.findOne({email})
 
-        if(!userExists) {
+        if(userExists) {
             return res.status(400).json({message: "User already exists"})
         }
 
         const user = await User.create({
             name,
             email,
-            password,
-            role
+            password
         })
 
         const createdUser = await User.findById(user._id).select(
@@ -48,7 +47,7 @@ const register = async(req, res) => {
             return res.status(400).json({message: "User registration failed"})
         }
 
-        return res.status(200).json({message: "User registration successfull"})
+        return res.status(200).json({message: "User registration successfull", createdUser})
     } catch (error) {
         console.log("User registration failed:", error)
         return res.status(400).json({error: error})
@@ -71,7 +70,7 @@ const login = async(req, res) => {
             return res.status(400).json({message: "User not found"})
         }
 
-        const isPasswordCorrect = user.isPasswordCorrect(password)
+        const isPasswordCorrect = await user.isPasswordCorrect(password)
 
         if(!isPasswordCorrect) {
             return res.status(400).json({message: "Invalid credentials"})
@@ -89,10 +88,10 @@ const login = async(req, res) => {
         }
 
         return res
-        .status(200)
-        .json({message: "User login successful", loggedInUser, accessToken, refreshToken})
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
+        .status(200)
+        .json({message: "User login successful", loggedInUser, accessToken, refreshToken})
     } catch (error) {
         console.log("User login failed:", error)
         return res.status(400).json({error: error})
@@ -117,10 +116,10 @@ const logout = async(req, res) => {
         }
 
         return res
-        .status(200)
-        .json({message: "User logout successful"})
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
+        .status(200)
+        .json({message: "User logout successful"})
     } catch (error) {
         console.log("User logout failed:", error)
         return res.status(400).json({error: error})
