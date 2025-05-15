@@ -24,6 +24,7 @@ const generateAccessAndRefreshToken = async(userId) => {
 router.get("/google", (req, res) => {
     const url = oAuth2Client.generateAuthUrl({
         access_type: "offline",
+        prompt: "consent",
         scope: ['profile', 'email']
     })
 
@@ -31,7 +32,7 @@ router.get("/google", (req, res) => {
 })
 
 router.get("/google/callback", async(req, res) => {
-    const code = req.query
+    const code = req.query.code
 
     if(!code) {
         return res.status(400).json({messsgae: "Missing Code"})
@@ -41,7 +42,7 @@ router.get("/google/callback", async(req, res) => {
     oAuth2Client.setCredentials(tokens)
 
     const oauth2 = google.oauth2({ version: 'v2', auth: oAuth2Client })
-    const { data } = oauth2.userinfo.get()
+    const { data } = await oauth2.userinfo.get()
 
     const { email, name } = data
 
@@ -71,11 +72,10 @@ router.get("/google/callback", async(req, res) => {
     }
 
     return res
-    .status(200)
-    .json({message: "Google auth login successful", loggedInUser, accessToken, refreshToken})
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-
+    .status(200)
+    .json({message: "Google auth login successful", loggedInUser, accessToken, refreshToken})
 })
 
 export default router
