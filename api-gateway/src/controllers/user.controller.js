@@ -205,6 +205,7 @@ const updateUser = async(req, res) => {
                     role
                 }
             },
+            { runValidators: true },
             { new: true }
         ).select("-password -refreshToken")
 

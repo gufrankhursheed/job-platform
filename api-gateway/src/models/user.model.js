@@ -19,7 +19,10 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["candidate", "recruiter", "admin"],
+      enum: {
+        values:  ["candidate", "recruiter", "admin"],
+        message: `{VALUE} is not a valid role`
+      },
       default: null,
     },
     refreshToken: {
