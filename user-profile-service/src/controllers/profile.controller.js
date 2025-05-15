@@ -1,5 +1,5 @@
-import { Profile } from "../models/profile.model"
-import { uploadCloudinary } from "../utils/cloudinary"
+import { Profile } from "../models/profile.model.js"
+import { uploadCloudinary } from "../utils/cloudinary.js"
 
 
 const createProfile = async(req, res) => {

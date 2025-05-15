@@ -31,8 +31,8 @@ const profileSchema = new Schema({
         required: true
     },
     resumeScore: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0
+        type: Number,
+        default: 0
     },
 }, {
     timestamps: true

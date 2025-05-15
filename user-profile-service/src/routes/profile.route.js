@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { createProfile, deleteProfile, getUserProfile, updateProfile, updateResume } from "../controllers/profile.controller";
-import { upload } from "../middlewares/multer.middleware";
+import { createProfile, deleteProfile, getUserProfile, updateProfile, updateResume } from "../controllers/profile.controller.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router()
 
