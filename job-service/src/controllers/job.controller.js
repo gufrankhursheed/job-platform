@@ -1,7 +1,13 @@
-import Job from "../models/job.model";
+import Job from "../models/job.model.js";
 
 const createJob = async (req, res) => {
   try {
+    const employerId = req.user?._id
+
+    if(req.user?.role !== "recruiter") {
+      return res.status(400).json({ message: "Unauthorized: Only recruiter can post a job" });
+    }
+    
     const {
       title,
       description,
@@ -24,12 +30,6 @@ const createJob = async (req, res) => {
       ].some((field) => field?.trim() === "")
     ) {
       return res.status(400).json({ message: "All fields are required" });
-    }
-
-    const employerId = req.user?._id
-
-    if(req.user?.role !== "recruiter") {
-      return res.status(400).json({ message: "Unauthorized: Only recruiter can post a job" });
     }
 
     const existingJob = await Job.findOne({
