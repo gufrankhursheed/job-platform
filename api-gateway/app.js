@@ -1,10 +1,11 @@
 import express from "express";
 import cors from "cors";
-import cookieParser from "cookie-parser"
+import cookieParser from "cookie-parser";
+import { createProxyMiddleware } from "http-proxy-middleware";
+import { verifyJWT } from "./src/middlewares/auth.middleware.js";
 
 const app = express()
 
-app.use(express.json())
 app.use(cors())
 app.use(cookieParser())
 
@@ -12,10 +13,35 @@ app.get("/", (req, res) => {
     res.send("Api-gateway is running")
 })
 
+app.use("/api/user/profile", verifyJWT, 
+    (req, res, next) => {
+        console.log("Proxying to user profile service");
+        if(req.user) {
+            console.log(req.user)
+            req.headers['x-user'] = JSON.stringify(req.user)
+        }
+        next()
+    },
+    createProxyMiddleware({
+        target: "http://localhost:5001",
+        changeOrigin: true,
+        pathRewrite: (path, req) => {
+            console.log("Before rewrite path:", path);
+            if (path === "/") return "/api/profile";
+            return "/api/profile" + path;
+        },
+        onProxyReq: (proxyReq, req, res) => {
+            console.log("Proxy request made to:", proxyReq.path);
+        },
+    })
+)
+
+app.use(express.json())
+
 import authRouter from "./src/routes/user.route.js"
 import googleRouter from "./src/routes/google.route.js"
 
 app.use("/api/user", authRouter)
 app.use("/api/auth", googleRouter)
-
+  
 export default app
