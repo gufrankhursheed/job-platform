@@ -4,7 +4,15 @@ import { uploadCloudinary } from "../utils/cloudinary.js"
 
 const createProfile = async(req, res) => {
     try {
-        const userId = req.user?._id
+        const userHeader = req.headers['x-user']
+
+        if (!userHeader) {
+            return res.status(400).json({ message: 'User information is missing' })
+        }
+
+        const user = JSON.parse(userHeader)
+
+        const userId = user._id
         
         if(!userId) {
             return res.status(400).json({message: "User Id is required"})
@@ -43,7 +51,7 @@ const createProfile = async(req, res) => {
             bio,
             skills: skills.split(","),
             location,
-            resumeUrl
+            resumeUrl: resumeUrl.url
         })
 
         return res.status(200).json({message: "User profile is created", profile})
