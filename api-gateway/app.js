@@ -15,9 +15,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/user/profile", verifyJWT, 
     (req, res, next) => {
-        console.log("Proxying to user profile service");
         if(req.user) {
-            console.log(req.user)
             req.headers['x-user'] = JSON.stringify(req.user)
         }
         next()
@@ -26,7 +24,6 @@ app.use("/api/user/profile", verifyJWT,
         target: "http://localhost:5001",
         changeOrigin: true,
         pathRewrite: (path, req) => {
-            console.log("Before rewrite path:", path);
             if (path === "/") return "/api/profile";
             return "/api/profile" + path;
         },

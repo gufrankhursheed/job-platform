@@ -63,7 +63,7 @@ const createProfile = async(req, res) => {
 
 const getUserProfile = async(req, res) => {
     try {
-        const userId = req.params
+        const userId = req.params.userId
 
         if(!userId){
             return res.status(400).json({message: "User Id is required"})
@@ -84,15 +84,23 @@ const getUserProfile = async(req, res) => {
 
 const updateProfile = async (req, res) => {
     try {
-        const userId = req.user?._id
+        const userHeader = req.headers['x-user']
 
-        if (!userId) {
-            return res.status(400).json({ message: "User Id is required" })
+        if (!userHeader) {
+            return res.status(400).json({ message: 'User information is missing' })
         }
 
-        const { id } = req.params
+        const user = JSON.parse(userHeader)
 
-        if(id !== userId) {
+        const currentUserId = user._id
+        
+        if(!currentUserId) {
+            return res.status(400).json({message: "User Id is required"})
+        }
+
+        const { userId } = req.params
+
+        if(currentUserId !== userId) {
             return res.status(400).json({ message: "Not authorized to perform this action" })
         }
 
@@ -121,15 +129,23 @@ const updateProfile = async (req, res) => {
 
 const updateResume = async(req, res) => {
     try {
-        const userId = req.user?._id
+        const userHeader = req.headers['x-user']
 
-        if (!userId) {
-            return res.status(400).json({ message: "User Id is required" })
+        if (!userHeader) {
+            return res.status(400).json({ message: 'User information is missing' })
         }
 
-        const { id } = req.params
+        const user = JSON.parse(userHeader)
 
-        if(id !== userId) {
+        const currentUserId = user._id
+        
+        if(!currentUserId) {
+            return res.status(400).json({message: "User Id is required"})
+        }
+
+        const { userId } = req.params
+
+        if(currentUserId !== userId) {
             return res.status(400).json({ message: "Not authorized to perform this action" })
         }
 
@@ -156,7 +172,7 @@ const updateResume = async(req, res) => {
 
         //if(resumeScore !== undefined) profile.resumeScore = Number(resumeScore)
 
-        profile.resumeUrl = resumeUrl
+        profile.resumeUrl = resumeUrl.url
 
         await profile.save()
 
@@ -169,15 +185,23 @@ const updateResume = async(req, res) => {
 
 const deleteProfile = async(req, res) => {
     try {
-        const userId = req.user?._id
+        const userHeader = req.headers['x-user']
 
-        if (!userId) {
-            return res.status(400).json({ message: "User Id is required" })
+        if (!userHeader) {
+            return res.status(400).json({ message: 'User information is missing' })
         }
 
-        const { id } = req.params
+        const user = JSON.parse(userHeader)
 
-        if(id !== userId) {
+        const currentUserId = user._id
+        
+        if(!currentUserId) {
+            return res.status(400).json({message: "User Id is required"})
+        }
+
+        const { userId } = req.params
+
+        if(currentUserId !== userId) {
             return res.status(400).json({ message: "Not authorized to perform this action" })
         }
         
