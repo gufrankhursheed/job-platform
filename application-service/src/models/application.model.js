@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../db";
+import { sequelize } from "../db/index.js";
 
 const Application = sequelize.define('Application', {
     status: {
@@ -12,8 +12,8 @@ const Application = sequelize.define('Application', {
         defaultValue: DataTypes.NOW
     },
     candidateId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+        type: DataTypes.STRING,
+        allowNull: false
     },
     jobId: {
         type: DataTypes.INTEGER,

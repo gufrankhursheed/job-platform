@@ -1,10 +1,7 @@
-import dotenv from "dotenv"
-import app from "./app.js"
-import { connectDB } from "./src/db/index.js"
+import "./src/config/env.js";
 
-dotenv.config({
-    path: "./.env"
-})
+import app from "./app.js";
+import { connectDB, sequelize } from "./src/db/index.js";
 
 connectDB()
 .then(() => {

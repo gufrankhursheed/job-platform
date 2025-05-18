@@ -1,14 +1,20 @@
-import Application from "../models/application.model"
+import Application from "../models/application.model.js"
 
 const applyJob = async(req, res) => {
     try {
-        const role = req.user?.role
+        const userHeader = req.headers['x-user']
 
-        if (role !== "candidate") {
+        if (!userHeader) {
+            return res.status(400).json({ message: 'User information is missing' })
+        }
+
+        const user = JSON.parse(userHeader)
+
+        if (user?.role !== "candidate") {
             return res.status(403).json({ message: "Only candidates can apply to jobs" })
         }
 
-        const candidateId = req.user?._id
+        const candidateId = user?._id
 
         const { jobId } = req.body
 
