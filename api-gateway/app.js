@@ -53,6 +53,26 @@ app.use("/api/job", verifyJWT,
     })
 )
 
+app.use("/api/application", verifyJWT, 
+    (req, res, next) => {
+        if(req.user) {
+            req.headers['x-user'] = JSON.stringify(req.user)
+        }
+        next()
+    },
+    createProxyMiddleware({
+        target: "http://localhost:5003",
+        changeOrigin: true,
+        pathRewrite: (path, req) => {
+            if (path === "/") return "/api/application";
+            return "/api/application" + path;
+        },
+        onProxyReq: (proxyReq, req, res) => {
+            console.log("Proxy request made to:", proxyReq.path);
+        },
+    })
+)
+
 app.use(express.json())
 
 import authRouter from "./src/routes/user.route.js"
