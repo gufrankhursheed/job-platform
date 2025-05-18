@@ -2,11 +2,25 @@ import Job from "../models/job.model.js";
 
 const createJob = async (req, res) => {
   try {
-    const employerId = req.user?._id
+    const userHeader = req.headers['x-user']
 
-    if(req.user?.role !== "recruiter") {
+    if (!userHeader) {
+      return res.status(400).json({ message: 'User information is missing' })
+    }
+
+    const user = JSON.parse(userHeader)
+
+    if(user?.role !== "recruiter") {
       return res.status(400).json({ message: "Unauthorized: Only recruiter can post a job" });
     }
+
+    const userId = user._id
+
+    if(!userId) {
+      return res.status(400).json({message: "User Id is required"})
+    }
+
+    const employerId = userId
     
     const {
       title,
@@ -25,9 +39,8 @@ const createJob = async (req, res) => {
         companyName,
         salaryRange,
         location,
-        remote,
         category,
-      ].some((field) => field?.trim() === "")
+      ].some((field) => field?.trim() === "") || typeof remote !== "boolean"
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -102,7 +115,15 @@ const updateJob = async (req, res) => {
     const { id } = req.params
     const { title, description, location, salaryRange, company, status } = req.body
 
-    if(req.user?.role !== "recruiter") {
+    const userHeader = req.headers['x-user']
+
+    if (!userHeader) {
+      return res.status(400).json({ message: 'User information is missing' })
+    }
+
+    const user = JSON.parse(userHeader)
+
+    if(user?.role !== "recruiter") {
       return res.status(400).json({ message: "Unauthorized: Only recruiter can update a job" });
     }
 
@@ -136,7 +157,15 @@ const deleteJob = async (req, res) => {
         return res.status(400).json({ message: "Job ID is required" });
       }
 
-      if(req.user?.role !== "recruiter") {
+      const userHeader = req.headers['x-user']
+
+      if (!userHeader) {
+        return res.status(400).json({ message: 'User information is missing' })
+      }
+
+      const user = JSON.parse(userHeader)
+
+      if(user?.role !== "recruiter") {
         return res.status(400).json({ message: "Unauthorized: Only recruiter can delete a job" });
       }  
   
