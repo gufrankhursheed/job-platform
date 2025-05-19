@@ -170,7 +170,7 @@ const updateInterview = async(req, res) => {
         }
 
         await fetch(`${process.env.API_GATEWAY_SERVICE}/api/google/calendar/update`, {
-            method: "PATCH",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -195,10 +195,51 @@ const updateInterview = async(req, res) => {
     }
 }
 
+const cancelInterview = async(req, res) => {
+    try {
+        const { id } = req.params
 
+        const userHeader = req.headers['x-user']
+
+        if (!userHeader) {
+            return res.status(400).json({ message: 'User information is missing' })
+        }  
+
+        const user = JSON.parse(userHeader)
+
+        if(user?.role !== "recruiter") {
+            return res.status(400).json({ message: "Unauthorized: Only recruiter can delete an interview" });
+        }
+
+        const interview = await Interview.findByPk(id)
+
+        if(!interview) {
+            return res.status(400).json({ message: "Interview not found" })
+        }
+
+        await fetch(`${process.env.API_GATEWAY_SERVICE}/api/google/calendar/delete`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                userId: interview.recruiterId,
+                eventId: interview.calendarEventId
+            })
+        })
+
+        await interview.destroy()
+  
+        return res.status(200).json({ message: "Interview deleted successfully", interview});
+    } catch (error) {
+        console.log("Interview delete failed:", error)
+        return res.status(400).json({error: error})
+    }
+}
 export {
     scheduleInterview,
     getInterviewsByRecruiter,
     getInterviewsByCandidate,
-    updateInterview
+    updateInterview,
+    cancelInterview
 }
