@@ -1,0 +1,55 @@
+import { google } from "googleapis"
+import { User } from "../models/user.model"
+import { oAuth2Client } from "../utils/googleAuth"
+
+const createCalendarEvent = async(req, res) => {
+    try {
+        const { userId, eventDetails } = req.body
+
+        if(!userId || !eventDetails){
+            return res.status(400).json({ message: "Missing userId or event details" })
+        }
+
+        const user = await User.findById(userId)
+
+        if(!user){
+            return res.status(400).json({ message: "User not found" })
+        }
+
+        if(!user.google?.accessToken || !user.google.refreshToken) {
+            return res.status(400).json({ message: "User not connected to google" })
+        }
+
+        oAuth2Client.setCredentials({
+            access_token: user.google.accessToken,
+            refresh_token: user.google.refreshToken
+        })
+
+        const calendar = google.calendar({ version: "v3", auth: oAuth2Client })
+
+        const response = await calendar.events.insert({
+            calendarId: "primary",
+            conferenceDataVersion: 1,
+            requestBody: {
+                ...eventDetails,
+                conferenceData: {
+                    createRequest: {
+                      requestId: `meet-${Date.now()}`,
+                      conferenceSolutionKey: {
+                        type: "hangoutsMeet"
+                      }
+                    }
+                }
+            }
+        })
+
+        return res.status(200).json({ message: "Calendar event created", data: response.data})
+    } catch (error) {
+        console.log("Calendar event creation failed:", error)
+        return res.status(400).json({error: error})
+    }
+}
+
+export {
+    createCalendarEvent
+}

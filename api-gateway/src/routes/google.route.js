@@ -2,6 +2,7 @@ import { Router } from "express";
 import { oAuth2Client } from "../utils/googleAuth.js";
 import { google } from "googleapis";
 import { User } from "../models/user.model.js";
+import { createCalendarEvent } from "../controllers/googleCalendar.controller.js";
 
 const router = Router()
 
@@ -85,5 +86,7 @@ router.get("/google/callback", async(req, res) => {
     .status(200)
     .json({message: "Google auth login successful", loggedInUser, accessToken, refreshToken})
 })
+
+router.route("/google/calendar").post(createCalendarEvent)
 
 export default router
