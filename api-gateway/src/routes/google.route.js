@@ -2,7 +2,7 @@ import { Router } from "express";
 import { oAuth2Client } from "../utils/googleAuth.js";
 import { google } from "googleapis";
 import { User } from "../models/user.model.js";
-import { createCalendarEvent, updateCalendarEvent } from "../controllers/googleCalendar.controller.js";
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent } from "../controllers/googleCalendar.controller.js";
 
 const router = Router()
 
@@ -88,6 +88,7 @@ router.get("/google/callback", async(req, res) => {
 })
 
 router.route("/google/calendar").post(createCalendarEvent)
-router.route("/google/calendar/update").post(updateCalendarEvent)
+router.route("/google/calendar/update").put(updateCalendarEvent)
+router.route("/google/calendar/delete").delete(deleteCalendarEvent)
 
 export default router
