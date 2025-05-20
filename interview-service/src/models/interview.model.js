@@ -1,13 +1,13 @@
-import { sequelize } from "../db";
+import { sequelize } from "../db/index.js";
 import { DataTypes } from "sequelize";
 
 const Interview = sequelize.define('Interview', {
     candidateId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false
     },
     recruiterId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false
     },
     jobId: {

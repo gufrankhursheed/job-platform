@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { cancelInterview, getInterviewsByRecruiter, scheduleInterview, updateInterview } from "../controllers/interview.controller";
+import { cancelInterview, getInterviewsByRecruiter, scheduleInterview, updateInterview } from "../controllers/interview.controller.js";
 
 const router = Router()
 

@@ -1,4 +1,4 @@
-import Interview from "../models/interview.model"
+import Interview from "../models/interview.model.js"
 
 const scheduleInterview = async(req, res) => {
     try {
@@ -14,24 +14,45 @@ const scheduleInterview = async(req, res) => {
             return res.status(403).json({ message: "Only recruiter can schedule interview" })
         }
 
-        const recruiterId = user?.id
+        const recruiterId = user?._id
 
-        const { candidateId, jobId, applicationId, scheduledAt, durationMinutes, status, notes } = req.body
+        const { candidateId, jobId, applicationId, scheduledAt, durationMinutes, notes } = req.body
 
-        if([candidateId, recruiterId, jobId, applicationId, scheduledAt, durationMinutes, status, notes].some(
-            (field) => (field.trim() === "")
-        )){
-            return res.status(400).json({message: "All fields are required"})
+        if (
+            typeof candidateId !== 'string' || candidateId.trim() === "" ||
+            typeof recruiterId !== 'string' || recruiterId.trim() === "" ||
+            typeof scheduledAt !== 'string' || scheduledAt.trim() === "" ||
+            typeof notes !== 'string' || notes.trim() === ""
+        ) {
+            return res.status(400).json({ message: "All fields are required" });
+          }
+
+        if (
+            typeof jobId !== 'number' || isNaN(jobId) ||
+            typeof applicationId !== 'number' || isNaN(applicationId)
+        ) {
+            return res.status(400).json({ message: "Job ID, Application ID must be valid numbers" });
+          }
+
+        if(jobId == undefined) {
+            return res.status(400).json({message: "Job ID is required"})
+        }
+
+        if(applicationId == undefined) {
+            return res.status(400).json({message: "Application ID is required"})
         }
 
         const alreadyScheduled = await Interview.findOne({candidateId, jobId})
 
-        if(!alreadyScheduled) {
+        if(alreadyScheduled) {
             return res.status(400).json({message: "Interview is already scheduled for the candidate for this job"})
         }
 
-        const start = new Date(scheduledAt).toISOString()
-        const end = new Date(start.getTime() + durationMinutes * 60 * 1000).toISOString()
+        const startDate = new Date(scheduledAt)
+        const endDate = new Date(startDate.getTime() + durationMinutes * 60 * 1000)
+
+        const start = startDate.toISOString()
+        const end = endDate.toISOString()
 
         const eventDetails = {
             summary: "Job Interview",
@@ -46,7 +67,7 @@ const scheduleInterview = async(req, res) => {
             }
         }
 
-        const response = await fetch(`${process.env.API_GATEWAY_SERVICE}/api/google/calendar`, {
+        const response = await fetch(`${process.env.API_GATEWAY_SERVICE}/api/auth/google/calendar`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -67,7 +88,6 @@ const scheduleInterview = async(req, res) => {
             applicationId,
             scheduledAt,
             durationMinutes,
-            status,
             meetingLink,
             calendarEventId,
             notes

@@ -10,7 +10,7 @@ app.get("/",(req, res) => {
     res.send("Interview service is running")
 })
 
-import interviewRouter from "./src/routes/interview.routes"
+import interviewRouter from "./src/routes/interview.routes.js"
 
 app.use("/api/interview", interviewRouter)
 
