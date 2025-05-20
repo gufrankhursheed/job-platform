@@ -26,7 +26,13 @@ router.get("/google", (req, res) => {
     const url = oAuth2Client.generateAuthUrl({
         access_type: "offline",
         prompt: "consent",
-        scope: ['profile', 'email']
+        scope: [
+            'https://www.googleapis.com/auth/calendar',
+            'https://www.googleapis.com/auth/calendar.events',
+            'https://www.googleapis.com/auth/calendar.events.owned',
+            'profile',
+            'email'
+        ]
     })
 
     res.redirect(url)

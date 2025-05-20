@@ -1,6 +1,6 @@
 import { google } from "googleapis"
-import { User } from "../models/user.model"
-import { oAuth2Client } from "../utils/googleAuth"
+import { User } from "../models/user.model.js"
+import { oAuth2Client } from "../utils/googleAuth.js"
 
 const createCalendarEvent = async(req, res) => {
     try {
