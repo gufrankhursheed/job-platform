@@ -50,6 +50,20 @@ export const chatSocketHandler = (io) => {
             }
         })
 
+        socket.on('messageDelivered', async (messageId) => {
+            try {
+                await Message.findByIdAndUpdate(messageId, { delivered: true })
+                const message = await Message.findById(messageId)
+                io.to(message.senderId).emit('messageStatusUpdate', {
+                    messageId,
+                    status: 'delivered',
+                })
+            } catch (error) {
+                console.log('Error marking message as delivered:', error)
+                socket.emit('error', 'Failed to mark message as delivered')
+            }
+          })
+
         socket.on('disconnect', () => {
             console.log(`User-${userId} disconnected`);
         })

@@ -13,7 +13,7 @@ const io = new Server(server, {
 
 connectDb()
 .then(() => {
-    server.listen(process.env.PORT || 5004, () => {
+    server.listen(process.env.PORT || 5005, () => {
         console.log(`Chat server is running on port ${process.env.PORT}`)
     })
 })
