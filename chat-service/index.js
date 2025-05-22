@@ -3,8 +3,13 @@ import "./src/config/env.js";
 
 import http from "http"
 import connectDb from "./src/db/index.js";
+import { Server } from "socket.io";
+import { chatSocketHandler } from "./src/sockets/chat.js";
 
 const server = http.createServer(app)
+const io = new Server(server, {
+    cors: { origin: '*' }
+})
 
 connectDb()
 .then(() => {
@@ -15,3 +20,5 @@ connectDb()
 .catch((error) => {
     console.log("Error: ", error)
 })
+
+chatSocketHandler(io)
