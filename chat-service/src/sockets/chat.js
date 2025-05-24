@@ -62,7 +62,50 @@ export const chatSocketHandler = (io) => {
                 console.log('Error marking message as delivered:', error)
                 socket.emit('error', 'Failed to mark message as delivered')
             }
-          })
+        })
+
+        socket.on('messageSeen', async({ messageIds }) => {
+            try {
+                await Message.updateMany(
+                    { _id: { $in: messageIds }, receiverId: userId },
+                    { $set: { seen: true } }
+                )
+
+                for(const id of messageIds) {
+                    const message = await Message.findById(id)
+                    if(message && message.senderId) {
+                        io.to(message.senderId).emit('messageSeenUpdate', {
+                            messageId: id
+                        })
+                    }
+                }
+            } catch (error) {
+                console.log('Error marking message as seen:', error)
+                socket.emit('error', 'Failed to mark message as seen')
+            }
+        })
+
+        socket.on('typing', async({ toUserId }) => {
+            try {
+                io.to(toUserId).emit('typing', {
+                    from: userId
+                })
+            } catch (error) {
+                console.log('Error marking typing:', error)
+                socket.emit('error', 'Failed to mark typing')
+            }
+        })
+
+        socket.io('stopTyping', async({ toUserId }) => {
+            try {
+                io.to(toUserId).emit('stopTyping', {
+                    from: userId
+                })
+            } catch (error) {
+                console.log('Error marking stop typing:', error)
+                socket.emit('error', 'Failed to mark stop typing')
+            }
+        })
 
         socket.on('disconnect', () => {
             console.log(`User-${userId} disconnected`);
