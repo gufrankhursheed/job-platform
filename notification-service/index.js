@@ -6,7 +6,7 @@ import connectDb from "./src/db/index.js"
 import { Server } from "socket.io"
 import { notificationSocketHandler } from "./src/sockets/notify.js"
 
-const server = http.createServer()
+const server = http.createServer(app)
 const io = new Server(server, {
     cors:  { origin: '*' }
 })
