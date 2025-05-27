@@ -217,6 +217,23 @@ const updateUser = async(req, res) => {
     }
 }
 
+const getUserById = async(req ,res) => {
+    try {
+        const { id } = req.params
+
+        if(!id) {
+            return res.status(400).json({message: "ID is missing"})
+        }
+
+        const user = await User.findById(id).select(" -password -refreshToken -google")
+
+        return res.status(200).json({message: "Fetched User", user})
+    } catch (error) {
+        console.log("User fetch failed:", error)
+        return res.status(400).json({error: error})
+    }
+}
+
 export {
     register,
     login,
@@ -224,5 +241,6 @@ export {
     changeCurrentPassword,
     refreshAccessToken,
     getCurrentUser,
-    updateUser
+    updateUser,
+    getUserById
 }
