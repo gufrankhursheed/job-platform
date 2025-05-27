@@ -8,7 +8,7 @@ export const connectRabbitMQ = async() => {
     try {
         const connection = await amqp.connect(process.env.RABBITMQ_URI)
 
-        const channel = await connection.createChannel()
+        channel = await connection.createChannel()
 
         await channel.assertQueue(queue, {
             durable: true

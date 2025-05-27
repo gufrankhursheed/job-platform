@@ -1,4 +1,5 @@
 import Interview from "../models/interview.model.js"
+import { publishToQueue } from "../utils/rabbitmq.js"
 
 const scheduleInterview = async(req, res) => {
     try {
@@ -91,6 +92,19 @@ const scheduleInterview = async(req, res) => {
             meetingLink,
             calendarEventId,
             notes
+        })
+
+        await publishToQueue({
+            userId: candidateId,
+            message: `You have an interview scheduled at ${scheduledAt}`,
+            type: "info",
+            metadata: {
+              jobId,
+              recruiterId,
+              scheduledAt,
+              durationMinutes,
+              notes
+            }
         })
 
         return res.status(200).json({message: "Interview scheduled", interview})
