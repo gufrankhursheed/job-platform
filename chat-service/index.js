@@ -12,7 +12,9 @@ const io = new Server(server, {
 })
 
 connectDb()
-.then(() => {
+.then(async() => {
+    await connectRabbitMQ()
+
     server.listen(process.env.PORT || 5005, () => {
         console.log(`Chat server is running on port ${process.env.PORT}`)
     })

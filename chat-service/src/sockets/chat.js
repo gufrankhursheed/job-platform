@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken"
 import { Message } from "../models/message.model"
+import { publishToQueue } from "../utils/rabbitmq"
 
 export const chatSocketHandler = (io) => {
     io.use((socket, next) => {
@@ -44,6 +45,17 @@ export const chatSocketHandler = (io) => {
     
                 io.to(userId).emit('newMessage', newMsg)
                 io.to(receiverId).emit('newMessage', newMsg)
+
+                await publishToQueue({
+                    userId: receiverId,
+                    message: `New message from user-${userId}`,
+                    type: "info",
+                    metadata: {
+                        senderId: userId,
+                        receiverId,
+                        messageId: newMsg._id
+                    }
+                })
             } catch (error) {
                 console.log(error);
                 socket.emit('error', 'Failed to send message')
