@@ -22,6 +22,12 @@ const applyJob = async(req, res) => {
             return res.status(400).json({message: "Information missing"})
         }
 
+        const job = await fetch(`http://localhost:5002/api/job/${jobId}`)
+        
+        if (!job) {
+            return res.status(404).json({ message: "Job not found" })
+        }
+
         const applied = await Application.findOne({
             where: {
                 candidateId: candidateId,
