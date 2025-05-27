@@ -81,7 +81,10 @@ const getCandidateApplication = async(req, res) => {
             }
 
             try {        
-                recruiter = await fetch(`http://localhost:5000/api/user/current-user`)
+                if(job?.employerId) {
+                    const recruiterId = job.employerId
+                    recruiter = await fetch(`http://localhost:5000/api/user/${recruiterId}}`)
+                }
             } catch (error) {
                 console.log(`Failed to fetch recruiter`, error)
             }
@@ -147,7 +150,9 @@ const getApplicationByIdWithRecruiter = async(req, res) => {
             return res.status(400).json({message: "Job not found"})
         }
 
-        const recruiter = await fetch(`http://localhost:5000/api/user/current-user`)
+        const recruiterId = job.employerId
+
+        const recruiter = await fetch(`http://localhost:5000/api/user/${recruiterId}}`)
 
         if(!recruiter) {
             return res.status(400).json({message: "Recruiter not found"})
@@ -181,7 +186,7 @@ const getJobApplication = async(req, res) => {
         })
 
         if (applications.length === 0) {
-            return res.status(404).json({ message: "No applications found for this candidate" })
+            return res.status(404).json({ message: "No applications found for this job" })
         }
 
         const enrichedApplications = await Promise.all(applications.map(async(app) => {
