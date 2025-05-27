@@ -1,4 +1,5 @@
 import Application from "../models/application.model.js"
+import { publishToQueue } from "../utils/rabbitmq.js"
 
 const applyJob = async(req, res) => {
     try {
@@ -42,6 +43,17 @@ const applyJob = async(req, res) => {
         const application = await Application.create({
             candidateId,
             jobId
+        })
+
+        await publishToQueue({
+            userId: job.employerId,
+            type: "info",
+            message: `${candidateId} applied to your job: ${job.title}`,
+            metadata: {
+              candidateId,
+              jobId,
+              applicationId: application._id
+            }
         })
 
         return res.status(200).json({message: "Application submitted", application})
