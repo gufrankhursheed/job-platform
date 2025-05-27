@@ -117,12 +117,57 @@ const scheduleInterview = async(req, res) => {
 const getInterviewsByRecruiter = async(req, res) => {
     try {
         const { id } = req.params
+        const page = req.query.page || 1
+        const limit = req.query.page || 10
+        const offset = (page - 1) * limit
 
         if(!id) {
             return res.status(400).json({message: "Recruiter Id is required"})
         }
 
-        const interviews = await Interview.findOne({
+        const { count, rows: interviews } = await Interview.findAndCountAll({
+            where: {
+                recruiterId: id
+            },
+            limit,
+            offset,
+            order: [['createdAt', 'DESC']]
+        })
+
+        if (interviews.length === 0) {
+            return res.status(404).json({ message: "No interviews found for this recruiter" })
+        }
+
+        const enrichedInterviews = await Promise.all(interviews.map(async(interview) => {
+            let job = null
+            let candidate = null
+
+            try {
+                const jobId = interview.jobId
+                job = await fetch(`http://localhost:5002/api/job/${jobId}`)
+            } catch (error) {
+                console.log(`Failed to fetch job ${candidate.jobId}`, error)
+            }
+
+            try {      
+                const candidateId = interview.candidateId  
+                candidate = await fetch(`http://localhost:5001/api/profile/${candidateId}`)
+            } catch (error) {
+                console.log(`Failed to fetch candidate`, error)
+            }
+
+            return {
+                ...interview.toJSON(),
+                job: job ? {
+                    title: job.title,
+                    companyName: job.companyName,
+                    location: job.location,
+                } : null,
+                candidate: candidate ? candidate : null
+            }
+        }))
+
+        /*const interviews = await Interview.findOne({
             where: {
                 recruiterId: id
             }
@@ -130,9 +175,17 @@ const getInterviewsByRecruiter = async(req, res) => {
 
         if(!interviews) {
             return res.status(400).json({message: "No interviews found"})
-        }
+        }*/
 
-        return res.status(200).json({message: "Interview fetched successfully", interviews})
+        return res.status(200).json({message: "Interviews retrieved successfully",
+            interviews: enrichedInterviews,
+            pagination: {
+                totalItems: count,
+                totalPages: Math.ceil(count / limit),
+                currentPage: page,
+                pageSize: limit
+            }
+        })
     } catch (error) {
         console.log("Interview fetch failed:", error)
         return res.status(400).json({error: error})
@@ -142,12 +195,60 @@ const getInterviewsByRecruiter = async(req, res) => {
 const getInterviewsByCandidate = async(req, res) => {
     try {
         const { id } = req.params
+        const page = req.query.page || 1
+        const limit = req.query.page || 10
+        const offset = (page - 1) * limit
 
         if(!id) {
             return res.status(400).json({message: "Candidate Id is required"})
         }
 
-        const interviews = await Interview.findOne({
+        const { count, rows: interviews } = await Interview.findAndCountAll({
+            where: {
+                candidateId: id
+            },
+            limit,
+            offset,
+            order: [['createdAt', 'DESC']]
+        })
+
+        if (interviews.length === 0) {
+            return res.status(404).json({ message: "No interviews found for this candidate" })
+        }
+
+        const enrichedInterviews = await Promise.all(interviews.map(async(interview) => {
+            let job = null
+            let recruiter = null
+
+            try {
+                const jobId = interview.jobId
+                job = await fetch(`http://localhost:5002/api/job/${jobId}`)
+            } catch (error) {
+                console.log(`Failed to fetch job ${candidate.jobId}`, error)
+            }
+
+            try {      
+                const recruiterId = interview.recruiterId  
+                recruiter = await fetch(`http://localhost:5000/api/user/${recruiterId}}`)
+            } catch (error) {
+                console.log(`Failed to fetch candidate`, error)
+            }
+
+            return {
+                ...interview.toJSON(),
+                job: job ? {
+                    title: job.title,
+                    companyName: job.companyName,
+                    location: job.location,
+                } : null,
+                recruiter: recruiter ? {
+                    name: recruiter.name,
+                    email: recruiter.email,
+                } : null,
+            }
+        }))
+
+        /*const interviews = await Interview.findOne({
             where: {
                 candidateId: id
             }
@@ -155,9 +256,17 @@ const getInterviewsByCandidate = async(req, res) => {
 
         if(!interviews) {
             return res.status(400).json({message: "No interviews found"})
-        }
+        }*/
 
-        return res.status(200).json({message: "Interview fetched successfully", interviews})
+        return res.status(200).json({message: "Interviews retrieved successfully",
+            interviews: enrichedInterviews,
+            pagination: {
+                totalItems: count,
+                totalPages: Math.ceil(count / limit),
+                currentPage: page,
+                pageSize: limit
+            }
+        })
     } catch (error) {
         console.log("Interview fetch failed:", error)
         return res.status(400).json({error: error})
