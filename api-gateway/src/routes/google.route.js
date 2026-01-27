@@ -84,13 +84,14 @@ router.get("/google/callback", async(req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-    }
+        sameSite: "none",
+        path: "/"
+    };
 
-    return res
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .status(200)
-    .json({message: "Google auth login successful", loggedInUser, accessToken, refreshToken})
+    res.cookie("accessToken", accessToken, options);
+    res.cookie("refreshToken", refreshToken, options);
+
+    return res.redirect("http://localhost:3000/auth/success");
 })
 
 router.route("/google/calendar").post(createCalendarEvent)
