@@ -14,6 +14,20 @@ const Job = sequelize.define('Job', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    requirements: {
+        type: DataTypes.JSON, 
+        allowNull: true,
+        defaultValue: []
+    },
+    responsibilities: {
+        type: DataTypes.JSON, 
+        allowNull: true,
+        defaultValue: []
+    },
+    experienceLevel: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     salaryRange: {
         type: DataTypes.STRING,
     },
@@ -25,7 +39,7 @@ const Job = sequelize.define('Job', {
     },
     category: {
         type: DataTypes.STRING, 
-        allowNull: true,
+        allowNull: false,
     },
     status: {
         type: DataTypes.STRING,
