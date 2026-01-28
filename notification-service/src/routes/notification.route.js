@@ -3,7 +3,7 @@ import { getNotificationsByUserId, markNotificationRead } from "../controllers/n
 
 const router = Router()
 
-router.route("/:userId").get(getNotificationsByUserId)
+router.route("/").get(getNotificationsByUserId)
 router.route("/:notificationId/read").put(markNotificationRead)
 
 export default router
